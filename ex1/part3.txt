@@ -1,0 +1,26 @@
+What is concurrency? What is parallelism? What's the difference?
+	Concurrency is having multiple tasks active at the same time, while parallelism is actualy executing multiple processes at the same time. Concurrent tasks may or may not be related, but can execute in any order in relation to eachother. Parallel tasks on the other hand physically execute at the same time on hardware that supports parallelism.
+
+Why have machines become increasingly multicore in the past decade?
+	Historically performance has increased in its exponential manner due to better manifacturing techniques enabling smaller and faster transistors. This previously consistent trend slowed down considerably in the 2000's with processor frequencies topping out at 4-5 GHz. For an industry that expects exponential year-over-year improvements this meant that the actors needed to improve performance in some other way. With transistors still getting smaller it was possible to add multiple physical processing cores on a single die and theoretically increase performance proportionally to the amount of cores. This has become the main driver of performance improvements in the past decade.
+
+What kinds of problems motivates the need for concurrent execution?
+	Concurrent execution is required on systems that give the illusion of running multiple different processes at the same time. This can be an embedded system that has some main control task constantly running, but might be required to execute some different task occasionally while still maintaining the control task responsibility. Concurrency can also enable multiple programs to run on a single logical processing core (e.g. Windows with multiple programs open compared to a binary file running on bare metal only equipped to run the flashed program). Concurrency also allows multiple execution paths to be executed "at the same time" to improve performance.
+
+Does creating concurrent programs make the programmer's life easier? Harder? Maybe both?
+	Concurrent programs require special considerations and precautions. Sharing data or accessing shared data between processes is essentially not a problem without concurrency because the processes are allowed to finish execution before other processes access the shared data. Concurrent programs do, however, provide performance benefits if used correctly and can save time and resources that way.
+
+What are the differences between processes, threads, green threads, and coroutines?
+	(Preface: These terms seem to mean something different in every course I've taken, so I'll answer from a C/POSIX view.) A process is the entire entity associated with a requested computational task. This includes a control block with process ID, memory management data, file descriptors and the executing threads themselves. A thread is the part of a process that follows the execution part of the computation task. Multiple threads can be a part of the same process. A green thread is a user-space construct that is similar to, and to some extent enable the same functionality (scheduling, concurrency, etc) as proper OS-supported threads. The functionality is provided by a VM or a runtime environment that enables scheduling and creation of seperate processing segments and communication between them. A coroutine is similar to a thread, but is fully sequential. This means that it is not preempted like threads are, and have to cooperatively yield or call the next part of its program to finish executing.
+
+Which one of these do pthread_create() (C/POSIX), threading.Thread() (Python), go (Go) create?
+	pthread_create() creates a thread within the process of the C-program. threading.Thread() creates what appear to be a green thread. Reading the documentation and some tutorials and not having the most thorough understanding of Python it appears the threading-Thread()s are limited by the interpreter only allowing a single thread to execute in the Python environment at a time. go's goroutines are very light weight routines that exist within the virtual space of the go runtime. This makes them similar to the Python threading.Thread()s in that they are limited by the capability of the runtime environment or interpreter, but are much more purpose-built for concurrency. They are not preemptively interrupted and must therefore yield either by finishing or blocking to enable cooperative scheduling. This is a green thread.
+
+How does pythons Global Interpreter Lock (GIL) influence the way a python Thread behaves?
+	The GIL in Python limits a single thread to run in the Python interpreter at a time. This fundamentally prevents parallelism but still enables concurrency.
+
+With this in mind: What is the workaround for the GIL (Hint: it's another module)?	
+	Searching around there appears to exist a different module (multithreading) that supports actual parallelism. Using non-standard interpreters could also provide a workaround for the GIL limitation in standard Python.
+
+What does func GOMAXPROCS(n int) int change?
+	The function sets the number of OS threads that the go environment uses to execute go code. Each OS thread can select and run a goroutine from the queue of runnable goroutines. 
