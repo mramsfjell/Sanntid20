@@ -1,32 +1,42 @@
 defmodule TCP do
 	@server %{ip: {10, 100, 23, 147}, port: 33546} # Port for 0-terminated messages
-	@client %{ip: {10, 100, 23, 203}, port: 9999} # Port chosen arbitrarily
+	@client %{ip: {10, 100, 23, 158}, port: 15024} # Port chosen arbitrarily
 
 	def main() do
+		# Sends a message to the server to connect to this machine
+		TCP.transmit(@server.ip, @server.port, 
+"Connect to: #{@client.ip |> Tuple.to_list |> Enum.join(".")}:#{@client.port}\0")	
+		
+		# Sets up a socket to listen on port on the local host
+		{:ok, listenSocket} = :gen_tcp.listen(@client.port, [])
 
-		{:ok, socket1} = :gen_tcp.connect(@server.ip, @server.port, [])  # Connects to a server
-		{:ok, listenSocket} = :gen_tcp.listen(@client.port, []) # Sets up a socket to listen on port on the local host.
-		:ok = :gen_tcp.send(socket1, "Connect to: 10.100.23.203:9999\0") # Sends a packet on the socket. Asks server to establish connection
-
-		{:ok, socket2} = :gen_tcp.accept(listenSocket, 5000) # Accepts an incoming connection request on a listening socket.
-		:gen_tcp.close(socket1) #Closes a TCP socket.
-		spawn(TCP, :transmit, [socket2]) # spawn new processes from own module
-		recv = spawn(TCP, :receive, [])
-		:gen_tcp.controlling_process(socket2, recv)
+		# Accepts an incoming connection
+		{:ok, socket2} = :gen_tcp.accept(listenSocket, 5000) 		
+		
+		:gen_tcp.send(socket2, "Testmelding! Hei på deg!!\0")
+		
+		# Spawns a receiving process and hands over control of the receiving socket
+		TCP.receiver(socket2)
+		
 	end
 
-	def transmit(socket) do
-		:ok = :gen_tcp.send(socket, "TCP test\0")
-		:timer.sleep(2000)
-		transmit(socket)
+	def transmit(address, port, message) do
+		{:ok, socket} = :gen_tcp.connect(address, port, [])
+		:ok = :gen_tcp.send(socket, message)
+
+		# Closes the socket that requested the connection
+		:gen_tcp.close(socket) 
 	end
 
-	def receive() do
+	def receiver(socket) do
 		receive do
-			{:tcp, _socket, data} ->
-			IO.puts(data)
+			{:tcp, ^socket, data} ->
+				IO.puts(data)
+				receiver(socket)
+		after 
+			30_000 -> IO.puts "Connection idle for 30 seconds. Disconnecting..."
+			:gen_tcp.close(socket)
 		end
-		receive()
 	end
 end
 
