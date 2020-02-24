@@ -37,10 +37,11 @@ Formulate communication of information to be as additive as possible.
 But: Distributed systems require analysis on a case-by-case basis.
 
 
-# Code quality
+# An intuition of code quality
 > Most of the time we spend looking at code, is spent looking at broken code. 
 > -Anders, 2020.
 
 _Code Complete_ gives some checklists for good coding practices, but lists is not as good as the correct intuition.
 What is this _intuition_, and how do we acquire it?
+
 
