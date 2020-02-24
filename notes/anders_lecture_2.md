@@ -13,7 +13,7 @@ For the elevator project, we choose to omit some consistency.
 
 ## Dealing with inconsistency
 Consistency can be defined as:
-> Free from contradiction
+> Free from contradiction >
 And contradiction usually comes from negation and self-reference. Thus, to enforce consistency, we should decrease these negations and self-references.
 	1. Self-reference: Not possible to have our system not refer to itself
 	1. Negation: Actions similar to reverse, reset, delete, etc. can cause negation. Limiting these or having strict rules for when negation is fine is a reasonable approach. Some message acceptance rules are given below.
@@ -37,7 +37,8 @@ But: Distributed systems require analysis on a case-by-case basis.
 
 
 # Code quality
-> Most of the time we spend looking at code, is spent looking at broken code. --Anders, 2020
+> Most of the time we spend looking at code, is spent looking at broken code. > --Anders, 2020.
+
 _Code Complete_ gives some checklists for good coding practices, but lists is not as good as the correct intuition.
 What is this _intuition_, and how do we acquire it?
 
