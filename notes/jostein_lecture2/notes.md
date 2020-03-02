@@ -14,15 +14,21 @@ mix.exs is where dependencies are put.
 ## Agent
 
 The Agent creates a shared variable. Start the agent with:
-``{:ok, my_agent} = Agent.start_link(fn -> 1 end, [])``
+```elixir
+{:ok, my_agent} = Agent.start_link(fn -> 1 end, [])
+```
 
 Agents only respond to anonymous functions. 
 It has an initial value inside the agent of 1.
 We modify the valye by sending the agent a function with `Agent.update()`:
-``Agent.update(my_agent, fn state -> state + 1 end)``
+```elixir
+Agent.update(my_agent, fn state -> state + 1 end)
+```
 
 Read the state of the agent with `Agent.get()`:
-``Agent.get(my_agent, fn state -> state end)``
+```elixir
+Agent.get(my_agent, fn state -> state end)
+```
 
 *Agents are not very Elixir-like, so think twice before using one.*
 
@@ -36,5 +42,7 @@ This is a registry of process identifiers that simplifies using PIDs (and makes 
 
 But what if we have multiple processes that wants to register as the same :atom in the process registry?
 Can use `__MODULE__` to let the preprocessor insert the module name for us:
-``Agent.start_link(fn -> 1 end, name: __MODULE__)`` 
+```elixir
+Agent.start_link(fn -> 1 end, name: __MODULE__)
+``` 
 
