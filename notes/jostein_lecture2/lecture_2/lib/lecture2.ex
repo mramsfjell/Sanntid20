@@ -1,18 +1,10 @@
 defmodule Lecture2 do
-  @moduledoc """
-  Documentation for `Lecture2`.
-  """
+	def start do
+		
+		children = [
+			AtomicStack
+		]
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Lecture2.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+		Supervisor.start_link(children, strategy: :one_for_one)
+	end
 end
